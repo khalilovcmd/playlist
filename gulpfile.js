@@ -6,11 +6,11 @@ var jshint = require('gulp-jshint');
 gulp.task("lint", function()
 {
     return gulp
-    .src(["./server/*.js", "./public/*.js"])
+    .src(["./backend/**/*.js", "./frontend/**/*.js"])
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['./server/*.js', './public/*.js'], ['lint']);
+  gulp.watch(['./backend/**/*.js', './frontend/**/*.js'], ['lint']);
 })
