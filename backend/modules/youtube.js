@@ -25,10 +25,9 @@ module.exports = (function() {
         var base = 'https://www.googleapis.com/';
         var resource = 'youtube/v3/videos';
 
-
         if (ids && ids.length > 0) {
-            for (var i = 0; i < ids.length; i += 120) {
-                var current = _.slice(ids, i, i + 100).join(",");
+            for (var i = 0; i < ids.length; i += 50) {
+                var current = _.slice(ids, i, i + 50).join(",");
                 var url = base + resource + '?' + 'part=snippet' + '&' + 'id=' + current + '&' + 'key=' + config.youtube.key;
                 urls.push(url);
             }
@@ -43,24 +42,26 @@ module.exports = (function() {
     self._getYoutubeVideoResource = function(data, urls, success, failure) {
 
         if (urls && urls.length > 0) {
-            
+
             var url = _.first(urls);
             urls = _.rest(urls);
-            
+
             unirest
-            .get(url)
-            .end(function(response) {
+                .get(url)
+                .header('content-type', 'application/json')
+                .end(function(response) {
+                    
+                    var result = JSON.parse(response.raw_body);
 
-                response = JSON.parse(response.body);
+                    if (result && result.items && !result.error) {
+                        data = data.concat(result.items);
+                        self._getYoutubeVideoResource(data, urls, success, failure);
+                    }
+                    else {
+                        failure(result.error);
+                    }
 
-                if (response && response.data && !response.error) {
-                }
-                else {
-                    failure(response.error);
-                }
-
-            });
-            
+                });
         }
         else {
             if (data && data.length > 0)
