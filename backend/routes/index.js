@@ -1,24 +1,41 @@
+var queryString = require('querystring');
 var express = require('express');
-var router = express.Router();
+var url = require('url');
+var _ = require('lodash');
 
-var facebook = require('../modules/facebook');
-var youtube = require('../modules/youtube');
+var Facebook = require('../modules/facebook');
+var Youtube = require('../modules/youtube');
+var config = require('../../config');
+
+
+var router = express.Router();
 
 /* 
 GET home page.
 */
 router.get('/', function(req, res, next) {
 
-    var accessToken = 'CAAU7Ls8e584BALeCcTTjjZAMvHll7FJse3nDFNm61wudf4layGUjohN6PjtoN5qS4R8nkf4U5OahRYo292jXo9Y0N1ZB7LZAyTmN4OW09yOFZBwtjfjL8grsQmLoSWoDuChksQ18YPk3EgtgaEinTe0NUeCy99AC77U8BK8pXIXBAxx9CeXk6vGiSMYNJqx6OW7MneI9MZC9ZB1PuSc8q3';
+    var facebook = new Facebook(config.facebook.key);
+    var youtube = new Facebook(config.youtube.key);
 
-    // facebook.getUserFeed(accessToken, function(result) {
-    //     res.send(result);
-    // }, function(error) {
-    //     res.send(error);
-    // });
-    
-    youtube._makeYoutubeResourceUrls(['asdasd', 'sdd']);
+    facebook.getUserFeed(
+        function(result) {
+            
+            result = 
+            _.chain(result)
+            .filter(function(r) {
+                return (r.link && r.link.indexOf('youtube') > 0) || (r.source && r.source.indexOf('youtube') > 0);
+            })
+            .pluck('link')
+            .value();
+            
+            //youtube.get
 
+            res.send(result);
+        },
+        function(error) {
+            res.send(error);
+        });
 });
 
 module.exports = router;
