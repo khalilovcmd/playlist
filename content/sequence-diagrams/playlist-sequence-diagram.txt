@@ -1,0 +1,32 @@
+# playlist flow, to view sequence diagram: https://www.websequencediagrams.com/
+
+
+title PlayList
+
+note over User,Route,Facebook,Db: User is visiting
+User->Route: visits
+Route->Route: check for accessToken cookie
+alt 'accessToken' cookie doesn't exist
+    Route->User: render login view
+else 'accessToken'  exists
+    Route->Db: get playlist data by 'accessToken'
+    Db->Route: return playlist json
+    Route->User: render login view
+end
+
+note over User,Route,Facebook,Db: User is logging in
+User->Route: log-in
+Route->Facebook: prompt user's permissions
+alt 'accessToken' retrieved
+    Facebook->Route: get user's accessToken
+    Route->Route: spawn a worker
+    Route->User: render waiting view
+    User->Route: poll for playlist..
+    Route->Route: worker done
+    Route->Db: save playlist + user's info in db
+    Db->Route: get playlist
+    Route->User: render playlist view
+else 'accessToken' is not retrieved
+    Facebook->Route: no user token
+    Route->User: render error view
+end

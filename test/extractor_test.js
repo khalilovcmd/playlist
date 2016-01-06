@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var expect = require('chai').expect;
-var sample = require('../samples/facebook/facebook_feed_response');
+var sample = require('../content/samples/facebook/facebook_feed_response');
 
 var Extractor = require('../backend/modules/extractor');
 
@@ -13,7 +13,7 @@ describe('extractor', function() {
 
             expect(result).to.not.be.null;
             expect(result.length > 0).to.be.ok;
-
+            
         })
 
 });
