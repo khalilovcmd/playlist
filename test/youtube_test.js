@@ -10,7 +10,7 @@ describe('youtube module test', function() {
      * to test if it can generate a valid youtube resource url
      */
     it('it should return a list of valid urls', function() {
-        var result = new Youtube(config.youtube.key)._makeYoutubeVideoResourceUrl(['asd', 'sss']);
+        var result = new Youtube(config.tests.youtubeKey)._makeYoutubeVideoResourceUrl(['asd', 'sss']);
         expect(result).to.include('https://www.googleapis.com/youtube/v3/videos?part=snippet&id=asd,sss&key=' + config.youtube.key);
     });
 
@@ -24,7 +24,7 @@ describe('youtube module test', function() {
         for (var i = 0; i < 250; i++)
             ids.push(i.toString());
 
-        var result = new Youtube(config.youtube.key)._makeYoutubeVideoResourceUrl(ids);
+        var result = new Youtube(config.tests.youtubeKey)._makeYoutubeVideoResourceUrl(ids);
         expect(result.length == 5).to.be.ok;
     });
 
@@ -35,7 +35,7 @@ describe('youtube module test', function() {
 
         var urls = ['https://www.googleapis.com/youtube/v3/videos?part=snippet&id=lk5iMgG-WJI,agVpq_XXRmU&key=' + config.youtube.key];
 
-        new Youtube(config.youtube.key)._getYoutubeVideoResource([], urls,
+        new Youtube(config.tests.youtubeKey)._getYoutubeVideoResource([], urls,
             function(result) {
                 expect(result).not.to.be.null;
                 expect(result.length == 2).to.be.ok;
@@ -55,7 +55,7 @@ describe('youtube module test', function() {
 
         var ids = ['lk5iMgG-WJI', 'agVpq_XXRmU', 'sToOUzFsVLw', 'vqOnUB9gnDM'];
 
-        new Youtube(config.youtube.key).getVideos(ids,
+        new Youtube(config.tests.youtubeKey).getVideos(ids,
             function(result) {
                 expect(result).not.to.be.null;
                 expect(result.length == 3).to.be.ok;
@@ -75,7 +75,7 @@ describe('youtube module test', function() {
 
         var ids = [];
 
-        new Youtube(config.youtube.key).getVideos(ids,
+        new Youtube(config.tests.youtubeKey).getVideos(ids,
             function(result) {
                 expect(result).to.be.null;
                 done();
@@ -94,7 +94,7 @@ describe('youtube module test', function() {
 
         var ids = ['1', '2', '3', '4'];
 
-        new Youtube(config.youtube.key).getVideos(ids,
+        new Youtube(config.tests.youtubeKey).getVideos(ids,
             function(result) {
                 expect(result).to.be.null;
                 done();

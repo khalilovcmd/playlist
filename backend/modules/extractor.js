@@ -2,11 +2,15 @@ var url = require('url');
 var _ = require('lodash');
 var querystring = require('querystring');
 
+var logger = require('./logger');
+
 function Extractor() {
 
 }
 
 Extractor.prototype.extract = function(videos) {
+
+    logger.trace('extract(): extracting youtube ids from videos. Videos length: %d', videos ? videos.length : 0)
 
     var videos =
         _.chain(videos)

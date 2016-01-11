@@ -1,6 +1,5 @@
 # playlist flow, to view sequence diagram: https://www.websequencediagrams.com/
 
-
 title PlayList
 
 note over User,Route,Facebook,Db: User is visiting
@@ -30,3 +29,16 @@ else 'accessToken' is not retrieved
     Facebook->Route: no user token
     Route->User: render error view
 end
+
+
+# get video snippet from youtube api 
+https://www.googleapis.com/youtube/v3/videos?part=snippet&id={id1,id2,id3,...}&key={key}
+
+# user's login page
+https://www.facebook.com/dialog/oauth?client_id=1472447112996814&redirect_uri=http://playlist.khalilovcmd.c9users.io/&scope=public_profile,user_posts
+
+# redirection example from facebook to playlist
+http://playlist.khalilovcmd.c9users.io/?code={code}
+
+# exchange code with access_token
+https://graph.facebook.com/v2.5/oauth/access_token?client_id={app_id}&redirect_uri=http://playlist.khalilovcmd.c9users.io/&client_secret={app_secret}&code={code}

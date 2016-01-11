@@ -2,18 +2,46 @@ var unirest = require('unirest');
 var async = require('async');
 var _ = require('lodash');
 
+var logger = require('./logger');
+
 function Youtube(key) {
     this.key = key;
 
 }
 
 Youtube.prototype._getMusicVideosOnly = function(videos) {
-    return _.reject(videos, function(n) {
-        return n.snippet.categoryId != 10;
-    })
+
+    logger.trace('_getMusicVideosOnly(): filter music videos only. Videos length: %d', videos ? videos.length : 0)
+
+    var result = [];
+
+    try {
+        result =
+            _.chain(videos)
+            .reject(function(v) {
+                return v.snippet.categoryId != 10;
+            })
+            .map(function(v) {
+                return {
+                    id: v.id,
+                    publishedAt: v.snippet.publishedAt,
+                    title: v.snippet.title,
+                    description: v.snippet.description
+                }
+            })
+            .value();
+    }
+    catch (err) {
+        logger.fatal(err);
+    }
+
+    return result;
 }
 
 Youtube.prototype._getYoutubeVideoResource = function(data, urls, success, failure) {
+
+
+    logger.trace('_getYoutubeVideoResource(): fetching youtube video resource. urls length: %s, data length: %d', url ? url.length : 0, data ? data.length : 0)
 
     var self = this;
 
@@ -22,19 +50,23 @@ Youtube.prototype._getYoutubeVideoResource = function(data, urls, success, failu
         var url = _.first(urls);
         urls = _.rest(urls);
 
+        logger.info('_getYoutubeVideoResource(): fetching this url: %s', url)
+
         unirest
             .get(url)
             .header('content-type', 'application/json')
             .end(function(response) {
 
-                var result = JSON.parse(response.raw_body);
+                response = JSON.parse(response.raw_body);
 
-                if (result && result.items && !result.error) {
-                    data = data.concat(result.items);
+                if (response && response.items && !response.error) {
+                    logger.info('_getYoutubeVideoResource(): fetched videos response.items.length: %d', response.items.length)
+                    data = data.concat(response.items);
                     self._getYoutubeVideoResource(data, urls, success, failure);
                 }
                 else {
-                    failure(result.error);
+                    logger.warn('_getYoutubeVideoResource(): response.err: %s', response.error)
+                    failure(response.error);
                 }
 
             });

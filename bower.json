@@ -1,0 +1,23 @@
+{
+  "name": "playlist",
+  "homepage": "https://github.com/khalilovcmd/playlist",
+  "authors": [
+    "Khalilov <tarek.saber.se@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.8",
+    "lodash": "~3.10.1",
+    "bootstrap": "~3.3.6"
+  }
+}
