@@ -1,23 +1,14 @@
-var expect = require('chai').expect
 var assert = require('assert')
+var expect = require('chai').expect
 var validator = require('validator')
 
-var config = require('../config');
-var Facebook = require('../backend/modules/facebook');
+var config = require('../config')
+var Facebook = require('../backend/modules/facebook')
 
 
 describe('facebook module test', function() {
 
-    describe('token', function() {
-
-        it('it should throw an exception for no value of token',
-            function() {
-
-                var result = function() {
-                    new Facebook()
-                }
-                expect(result).to.throw(assert.AssertionError)
-            })
+    describe('Token', function() {
 
         it('it should fail because of wrong token',
             function(done) {

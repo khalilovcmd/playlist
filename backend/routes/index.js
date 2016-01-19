@@ -1,10 +1,11 @@
 var express = require('express');
 var unirest = require('unirest');
-var url = require('url');
+var async = require('async');
 
 var Facebook = require('../modules/facebook');
 var Worker = require('../modules/worker');
 var redis = require('../modules/redis');
+var mongo = require('../modules/mongo');
 
 var config = require('../../config');
 
@@ -31,58 +32,104 @@ GET home page.
 */
 router.get('/', function(req, res, next) {
 
-    if (req.query && req.query.code) {
+    if (req.query && req.query.error) {
 
-        unirest
-            .get('https://graph.facebook.com/v2.5/oauth/access_token?' +
-                'client_id=' + config.facebook.appId +
-                '&redirect_uri=' + config.facebook.redirect_uri +
-                '&client_secret=' + config.facebook.appSecret +
-                '&code=' + req.query.code)
-            .end(function(response) {
+        /**
+         * render 'home' view with error
+         */
+        res.render('home', {
+            title: 'error!',
+            content: req.query.error + ' - ' + req.query.error_description + ' - ' + req.query.error_reason
+        });
 
-                var result = JSON.parse(response.raw_body);
+    }
+    else if (req.query && req.query.code) {
 
-                if (result && result.access_token && !result.error) {
 
-                    new Worker({
-                            facebook: result.access_token,
-                            youtube: config.youtube.key
+
+        async.waterfall([function(next) {
+
+                    /**
+                     * get facebook accessToken
+                     */
+
+                    var opts = {
+                        appId: config.facebook.appId,
+                        redirect_uri: config.facebook.redirect_uri,
+                        appSecret: config.facebook.appSecret,
+                        code: req.query.code
+                    }
+
+                    new Facebook().getAccessToken(opts,
+                        function(result) {
+                            next(null, result)
+                        },
+                        function(error) {
+                            next('error', error)
                         })
-                        .work();
 
+                },
+                function(token, next) {
 
-                    res.cookie('token', result.access_token, {
-                        maxAge: 2592000000,
-                        httpOnly: true
-                    });
+                    /**
+                     * get user's facebook id
+                     */
 
-                    res.render('waiting', {
-                        title: 'some title'
-                    });
+                    new Facebook(token).getUserMe(
+                        function(result) {
+                            next(null, {
+                                id: result,
+                                token: token
+                            })
+                        },
+                        function(error) {
+                            next('error', error)
+                        })
+
+                },
+                function(user, next) {
+                    /**
+                     * start worker to 
+                     */
+                    new Worker({
+                        
+                        facebook: user.token,
+                        youtube: config.youtube.key
+                    }).work()
+                },
+                function(token, next) {
+
 
 
                 }
-                else {
-                    res.status(400).send('no token received.');
-                }
+            ],
+            function(state, result) {
+                //if (state == 'error')
+            })
 
-            });
     }
     else {
 
         if (req.cookies && req.cookies.token) {
-            res.render('waiting', {
+
+            /**
+             * 
+             */
+            res.render('playlist', {
                 title: 'some title'
             })
         }
         else {
+
+            /**
+             * 
+             */
             res.render('home', {
-                title: 'some title'
+                title: 'new!',
+                content: 'no cookies, no errors, no code, it is a new brave world!'
             });
         }
     }
-
 
 });
 

@@ -70,18 +70,16 @@
       </nav>
 
       <!-- Main component for a primary marketing message or call to action -->
-      <div ng-app="playListApp" ng-controller="playlistController">
+      <div ng-app="playListApp" ng-controller="waitingController">
         <h1>{{title}}</h1>
         <p>demo content here! ta-daaa!.</p>
         
         <div class="row">
-          <div class="col-md-8"><div class="jumbotron">
-              <div class="list-group" ng-repeat="v in videos">
-                <a href="#" class="list-group-item active">
-                  <h4 class="list-group-item-heading">{{v.snippet.title}}</h4>
-                  <p class="list-group-item-text"><a href="http://youtube.com/?v={{v.snippet.id}}">{{v.snippet.title}}</a></p>
-                </a>
-              </div>
+          <div class="col-md-8">
+            <div class="list-group" >
+              <button type="button"  ng-repeat="v in videos.videos track by $index" class="list-group-item">
+                <a ng-href="http://youtube.com/watch?v={{v.id}}" >{{v.title}}</a>
+              </button>
             </div>
           </div>
         </div>

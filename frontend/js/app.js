@@ -24,7 +24,6 @@ angular
                 setInterval(function() {
                     $http.get("http://playlist.khalilovcmd.c9users.io/progress/")
                         .then(function(response) {
-
                             if (response.data) {
                                 $scope.videos = JSON.parse(response.data);
                                 clearInterval(polling);

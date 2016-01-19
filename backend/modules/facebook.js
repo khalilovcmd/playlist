@@ -10,9 +10,9 @@ var logger = require('./logger');
  */
 function Facebook(token) {
 
-    assert.ok(token, "data member 'token' must not be null")
-
-    this.token = token;
+    if (token) {
+        this.token = token
+    }
 }
 
 /**
@@ -57,7 +57,6 @@ Facebook.prototype.getAccessToken = function(configs, success, failure) {
             }
 
         });
-
 }
 
 
@@ -66,10 +65,11 @@ Facebook.prototype.getAccessToken = function(configs, success, failure) {
  */
 Facebook.prototype.getUserMe = function(success, failure) {
 
+    var self = this
+
+    assert.ok(self.token, "data member 'token' must not be null")
     assert.notEqual(success, null, "argument 'success' must not be null")
     assert.notEqual(failure, null, "argument 'failure' must not be null")
-
-    var self = this
 
     var meUrl = self._makeFacebookResourceUrl({
         base: 'https://graph.facebook.com/v2.5/',
@@ -91,10 +91,12 @@ Facebook.prototype.getUserMe = function(success, failure) {
  */
 Facebook.prototype.getUserFeed = function(success, failure) {
 
+    var self = this
+
+    assert.ok(self.token, "data member 'token' must not be null")
     assert.notEqual(success, null, "argument 'success' must not be null")
     assert.notEqual(failure, null, "argument 'failure' must not be null")
 
-    var self = this;
 
     async.waterfall([
             function(next) {
